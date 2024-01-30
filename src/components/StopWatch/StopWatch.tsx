@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import "./StopWatch.scss";
 import "../StopWatchButton/StopWatchButton";
 import StopWatchButton from "../StopWatchButton/StopWatchButton";
+import { calculateTime } from "../../utils/utils";
 
 export default function StopWatch() {
 	// Store time in milliseconds
@@ -28,29 +29,6 @@ export default function StopWatch() {
 	//Initialize lap array
 	const [laps, setLaps] = useState<number[]>([]);
 
-	//Calculate time from DateConstructor and convert to a string with with 2 padding
-	type calculateFunction = (a: number) => timeStruct;
-	const calculateTime: calculateFunction = (time: number) => {
-		const hours: string = Math.floor(time / 3600000)
-			.toString()
-			.padStart(2, "0");
-		const minutes: string = Math.floor((time % 3600000) / 60000)
-			.toString()
-			.padStart(2, "0");
-		const seconds: string = Math.floor((time % 60000) / 1000)
-			.toString()
-			.padStart(2, "0");
-		const milliseconds: string = Math.floor(time % 1000)
-			.toString()
-			.slice(0, 2)
-			.padStart(2, "0");
-
-		const newTime = { hours, minutes, seconds, milliseconds };
-		console.log(newTime);
-
-		return newTime;
-	};
-
 	//Change the time displayed every 10ms when isRunning is true
 	useEffect(() => {
 		let intervalId: number | NodeJS.Timer;
@@ -59,22 +37,18 @@ export default function StopWatch() {
 				setTime(time + 10);
 			}, 10);
 		}
-		const newDisplayTime: timeStruct = calculateTime(time);
-		setDisplayTime(newDisplayTime);
 		return () => clearInterval(intervalId);
 	}, [isRunning, time]);
 
 	// Starts the timer and retrieves start time in ms
 	function startRunning() {
 		setIsRunning(true);
-		// const getStartTime: number | DateConstructor = Date.now();
 		setStartTime(Date.now());
 	}
 
 	// Stops timer, records stop time, and adds the duration of interval to laps array
 	function stopRunning() {
 		setIsRunning(false);
-		// const stopTime: number | DateConstructor = Date.now();
 		const lapTime = Date.now() - startTime;
 		setLaps([...laps, lapTime]);
 	}
@@ -89,6 +63,11 @@ export default function StopWatch() {
 		setTime(0);
 		setLaps([]);
 	}
+
+	useEffect(() => {
+		const newDisplayTime = calculateTime(time);
+		setDisplayTime(newDisplayTime);
+	}, [time]);
 
 	return (
 		<div className="display">
@@ -128,7 +107,7 @@ export default function StopWatch() {
 					<h3 className="laps__title">LAPS</h3>
 					{laps.map((lap, index) => {
 						//calculate minutes, seconds, and milliseconds with Math.floor
-						const lapTime: timeStruct = calculateTime(lap);
+						const lapTime = calculateTime(lap);
 
 						return (
 							<div key={index} className="laps__item">

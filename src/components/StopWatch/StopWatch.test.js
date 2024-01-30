@@ -25,7 +25,7 @@ describe("Stopwatch", () => {
 		setTimeout(expect(timer).not.toBe("00"), 500);
 	});
 
-	//test reset function
+	//TEST RESET FUNCTION
 	it("resets time to zero", () => {
 		const { container } = render(<StopWatch />);
 		let timer;
@@ -39,6 +39,7 @@ describe("Stopwatch", () => {
 		}, 500);
 	});
 
+	//TEST LAP FUNCTIONALITY
 	//test change of isShowing with lap button
 	it("shows laps when laps button is clicked", () => {
 		const { container } = render(<StopWatch />);
